@@ -31,17 +31,28 @@ class BaseSondeLoader:
         Returns: 
             list[str] : variables names
         """
-        assert self.__is_var_uniform(), "varaibles needs to be uniform"
+        assert self._is_var_uniform(), "varaibles needs to be uniform"
 
-    @abstractmethod
-    def __is_var_uniform(self):
+    def _is_var_uniform(self):
         """Check if variables names across files are the same. 
+
+        TODO
 
         Note: 
             To implement, make sure clear criteria is sticked to.
         """
 
         return True
+
+    def _is_criteria_valid(self):
+        """Check if the criteria passed to available and load are valid
+
+        TODO
+
+        """
+
+        return True
+
 
     @abstractmethod
     def available(self,  criteria : dict):
@@ -63,50 +74,11 @@ class BaseSondeLoader:
         """Abstract interface for radiosonde loader
 
         Args:
-           start, end (str) : iso_format timestring used for bounding soundes. 
+           start, end (str) : iso_format timestring used for bounding sounde
+               launchtimes
 
         Returns: 
             Radiosonde : The composite type of radiosonde collections. 
         """
         pass
-
-def available(conn, z_range=None, pct=0.8):
-    """List availble radiosondes from the sqlite3 database"""
-
-    if z_range is None:
-        sql_query = 'select distinct LaunchTime, LaunchLatitude, '\
-                    + 'LaunchLongitude from sonde'
-        return pd.read_sql(sql_query,
-                           conn,
-                           parse_dates=['LaunchTime'])
-    else:
-        sql_query = \
-        "select min(timestamp) as startTime, max(timestamp) as endTime, "\
-               + "min(Height) as minHeight, max(Height) as maxHeight, "\
-               + "avg(Latitude) as Latitude, avg(Longitude) as Longitude,"\
-               + "min(Dropping) as dropping "\
-           + "from sonde where Height between ? and ? "\
-           + "group by LaunchTime, Dropping"
-        allsondes = pd.read_sql(sql_query,
-                                conn,
-                                parse_dates=['startTime', 'endTime'],
-                                params=z_range)
-        allsondes['startTime'] = allsondes['startTime'].dt.tz_localize(None)
-        allsondes['endTime'] = allsondes['endTime'].dt.tz_localize(None)
-        return allsondes.query('(maxHeight - minHeight)/{z_full} > {pct}'\
-                               .format(z_full=z_range[1]-z_range[0],pct=pct))\
-                               .reset_index(drop=True)
-
-def load(conn, meta, ddz_smooth_window=10):
-    """Load radiosonde data (multiple) from sqlite3 database"""
-
-    sql_query = "select * from sonde where timestamp between ? and ?"
-    t_range = [meta['startTime'].strftime(iso_format),
-               meta['endTime'].strftime(iso_format)]
-    sonde_raw = pd.read_sql(sql_query,
-                            conn,
-                            parse_dates=['timestamp'],
-                            params=t_range)
-    sonde = sonde_raw[varsIncluded]
-    return Radiosonde(sonde, meta, ddz_smooth_window)
 

@@ -1,7 +1,10 @@
+import pandas as pd
+from .utils import *
 
 class Radiosonde(pd.DataFrame):
+    """A radiosonde object"""
 
-    def __init__(self, df, meta, ddz_smooth_window=10):
+    def __init__(self, df, meta=None, ddz_smooth_window=10):
         pd.DataFrame.__init__(self, index=df['Height'].values)
         self.index.name = 'z'
         setattr(self,'raw_df', df)
@@ -70,9 +73,11 @@ class Radiosonde(pd.DataFrame):
         self['Ri_g'] = (g / self['T_v_K'] * self['dTheta_vdz']) \
                     / self['dUdz'] ** 2
 
-    def _ddz(self, varName, ddz_smooth_window=10):
+    def _ddz(self, varName, grad_scheme=gradx, ddz_smooth_window=10):
+        """Compute vertical gradient of a given variable"""
+
         ser_tmp_sm = self[varName].rolling(ddz_smooth_window).mean()
-        dudz, z_grad = gradx(ser_tmp_sm.values, ser_tmp_sm.index.values)
+        dudz, z_grad = grad_scheme(ser_tmp_sm.values, ser_tmp_sm.index.values)
         return pd.Series(dudz, index=z_grad)
 
     def lcl(self):
@@ -100,7 +105,7 @@ class Radiosonde(pd.DataFrame):
     def zplot(self, x_vars, ax=None, **kwargs):
 
         if ax == None:
-            fig, ax = plt.subplots(**kwargs)
+            _, ax = plt.subplots(**kwargs)
 
         for varname in x_vars:
             ax.plot(self[varname].values,
