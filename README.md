@@ -21,6 +21,10 @@ radiosonde data are also commonly used as input for modelling applications.
 * A bridge for output to required format. 
 * A computation module to output desired results. 
 
+### Useful Related Resources
+[ZPYin/Radiosonde](https://github.com/ZPYin/Radiosonde): Coded respository for
+Integrated Global Radiosonde Archive (IGRA) data retrival.
+
 ## Note
 
 This project has been set up using PyScaffold 3.2.3. For details and usage
