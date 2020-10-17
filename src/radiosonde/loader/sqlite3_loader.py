@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 from .base_loader import BaseSondeLoader
-from ..radiosonde_df import Radiosonde
+from ..radiosonde_df import SimpleDataFrameRadiosonde as Radiosonde
 
 class SQLite3SondeLoader(BaseSondeLoader):
 
@@ -42,7 +42,7 @@ class SQLite3SondeLoader(BaseSondeLoader):
 
         if criteria.get('t_range') is not None:
             t_range = criteria['t_range']
-            where_query += f"and LaunchTime between {t_range[0]} and {t_range[1]} "\
+            where_query += f"and LaunchTime between '{t_range[0]}' and '{t_range[1]}' "\
                          
         group_query =  "group by LaunchTime, Dropping"
 
