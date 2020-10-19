@@ -19,11 +19,11 @@ class BaseDatetime:
                                      tzinfo=tzinfo,
                                      fold=fold)
 
-    @staticmethod
-    def from_datetime(dt):
+    @classmethod
+    def from_datetime(cls, dt):
         """Convert from datetime.datetime"""
 
-        return BaseDatetime(year=dt.year, 
+        return cls(year=dt.year, 
                              month=dt.month,
                              day=dt.day,
                              hour=dt.hour,
@@ -35,10 +35,10 @@ class BaseDatetime:
 
 
 
-    @staticmethod
-    def fromisoformat(date_string):
+    @classmethod
+    def fromisoformat(cls, date_string):
         """Adaptor to use datetime.datetime.fromisoformat(date_string)"""
-        return BaseDatetime.from_datetime((datetime.fromisoformat(date_string)))
+        return cls.from_datetime((datetime.fromisoformat(date_string)))
 
     # Instance Methods
     def isoformat(self, sep='T', timespec='auto'):

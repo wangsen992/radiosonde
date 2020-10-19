@@ -1,7 +1,8 @@
 import sqlite3
 import pandas as pd
 from .base_loader import BaseSondeLoader
-from ..radiosonde_df import SimpleDataFrameRadiosonde as Radiosonde
+from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
+from ..utils.datetime.sqlite3 import SQLite3Datetime as datetime
 
 class SQLite3SondeLoader(BaseSondeLoader):
 
@@ -41,13 +42,14 @@ class SQLite3SondeLoader(BaseSondeLoader):
             where_query = f"where Height between {z_range[0]} and {z_range[1]} "\
 
         if criteria.get('t_range') is not None:
-            t_range = criteria['t_range']
-            where_query += f"and LaunchTime between '{t_range[0]}' and '{t_range[1]}' "\
-                         
+            t_range = (datetime.fromisoformat(criteria['t_range'][0]),\
+                      datetime.fromisoformat(criteria['t_range'][1]))
+            print(t_range)
+            where_query += f"and LaunchTime between {t_range[0].to_str()} and {t_range[1].to_str()} " 
         group_query =  "group by LaunchTime, Dropping"
 
-        allsondes = pd.read_sql(select_query+where_query+group_query,
-                                self.conn,
+        allsondes = pd.read_sql(sql=select_query+where_query+group_query,
+                                con=self.conn,
                                 parse_dates=['LaunchTime','startTime', 'endTime'])
         allsondes['startTime'] = allsondes['startTime'].dt.tz_localize(None)
         allsondes['endTime'] = allsondes['endTime'].dt.tz_localize(None)

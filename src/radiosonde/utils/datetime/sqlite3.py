@@ -7,5 +7,10 @@ class SQLite3Datetime(BaseDatetime):
         if protocol is sqlite3.PrepareProtocol:
             return self.strftime("%Y-%m-%d %H:%M:%S.%f UTC")
 
+    def to_str(self):
+        return self.strftime("%Y-%m-%d %H:%M:%S.%f UTC")
+
+
+
 if __name__ == "__main__":
     sd = SQLite3Datetime(2018, 9, 13, 15)
