@@ -44,8 +44,10 @@ class SQLite3SondeLoader(BaseSondeLoader):
         if criteria.get('t_range') is not None:
             t_range = (datetime.fromisoformat(criteria['t_range'][0]),\
                       datetime.fromisoformat(criteria['t_range'][1]))
-            print(t_range)
-            where_query += f"and LaunchTime between {t_range[0].to_str()} and {t_range[1].to_str()} " 
+            if criteria.get('z_range') is not None:
+                where_query += f"and LaunchTime between '{t_range[0]}' and '{t_range[1]}' " 
+            else:
+                where_query = f"where LaunchTime between '{t_range[0]}' and '{t_range[1]}' " 
         group_query =  "group by LaunchTime, Dropping"
 
         allsondes = pd.read_sql(sql=select_query+where_query+group_query,

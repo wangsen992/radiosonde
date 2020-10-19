@@ -7,7 +7,7 @@ class SQLite3Datetime(BaseDatetime):
         if protocol is sqlite3.PrepareProtocol:
             return self.strftime("%Y-%m-%d %H:%M:%S.%f UTC")
 
-    def to_str(self):
+    def __repr__(self):
         return self.strftime("%Y-%m-%d %H:%M:%S.%f UTC")
 
 
