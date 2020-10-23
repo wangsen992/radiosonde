@@ -1,8 +1,14 @@
 from abc import ABC, abstractmethod
-import pandas as pd
+
+from ..internals.launch_info import LaunchInfo
+from ..internals.data_info import DataInfo
 
 class BaseRadiosondeComponent(ABC):
     """Define an interface for working with  radiosonde data"""
+
+    def __init__(self) -> None:
+        self.launch_info : LaunchInfo = {}
+        self.data_info   : DataInfo = DataInfo()
 
     def is_list(self) -> bool:
         

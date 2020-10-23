@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 from .base_loader import BaseSondeLoader
 from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
-from ..utils.datetime.sqlite3 import SQLite3Datetime as datetime
+from ..internals.datetime.sqlite3 import SQLite3Datetime as datetime
 
 class SQLite3SondeLoader(BaseSondeLoader):
 

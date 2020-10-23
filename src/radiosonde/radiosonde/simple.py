@@ -1,6 +1,7 @@
 import pandas as pd
+from .base import BaseRadiosonde, BaseRadiosondeList
 
-class SimpleDataFrameRadiosonde(pd.DataFrame):
+class SimpleDataFrameRadiosonde(BaseRadiosonde, pd.DataFrame):
     """A simple inheritance of pd.DataFrame"""
 
     def __init__(self, df):
