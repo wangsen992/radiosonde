@@ -1,10 +1,54 @@
 import pandas as pd
 from .base import BaseRadiosonde, BaseRadiosondeList
+from ..internals.launch_info import LaunchInfo as LaunchInfo
+from ..internals.gps import GeoLocation
+from ..internals.sonde_datetime.base import BaseDatetime as SondeDatetime
 
-class SimpleDataFrameRadiosonde(BaseRadiosonde, pd.DataFrame):
+class SimpleDataFrameRadiosonde(BaseRadiosonde):
     """A simple inheritance of pd.DataFrame"""
 
-    def __init__(self, df):
-        pd.DataFrame.__init__(self, data=df)
-        self.index.name = 'z'
+    def __init__(self, df, launch_lat, launch_lon, launch_time):
+        self._data = df
+        gps = GeoLocation(lat=launch_lat, lon=launch_lon)
+        time = SondeDatetime.from_datetime(launch_time)
+        self._launch_info = LaunchInfo(launch_time=time,
+                                       launch_gps=gps) 
 
+    def some_operation(self):
+        print("Do some operation here")
+
+    @property
+    def height(self):
+        return self._data.loc[:,'height'].values
+
+    @property
+    def pressure(self):
+        return self._data.loc[:,'pressure'].values
+
+    @property
+    def temperature(self):
+        return self._data.loc[:,'temperature'].values
+
+    @property
+    def dewpoint(self):
+        raise  NotImplementedError("Dewpoint not available, need to load compute")
+
+    @property
+    def relative_humidity(self):
+        return self._data.loc[:,'humidity'].values
+    
+    @property
+    def wind_speed(self):
+        return self._data.loc[:,'wind_speed'].values
+
+    @property
+    def wind_direction(self):
+        return self._data.loc[:,'wind_direction'].values
+
+    @property
+    def wind_east(self):
+        return self._data.loc[:,'wind_east'].values
+
+    @property
+    def wind_north(self):
+        return self._data.loc[:,'wind_north'].values

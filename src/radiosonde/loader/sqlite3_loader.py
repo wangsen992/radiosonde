@@ -1,8 +1,9 @@
 import sqlite3
+from datetime import datetime
 import pandas as pd
 from .base_loader import BaseSondeLoader
 from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
-from ..internals.datetime.sqlite3 import SQLite3Datetime as datetime
+from ..internals.sonde_datetime.sqlite3 import SQLite3Datetime as SondeDatetime
 
 class SQLite3SondeLoader(BaseSondeLoader):
 
@@ -42,8 +43,8 @@ class SQLite3SondeLoader(BaseSondeLoader):
             where_query = f"where Height between {z_range[0]} and {z_range[1]} "\
 
         if criteria.get('t_range') is not None:
-            t_range = (datetime.fromisoformat(criteria['t_range'][0]),\
-                      datetime.fromisoformat(criteria['t_range'][1]))
+            t_range = (SondeDatetime.fromisoformat(criteria['t_range'][0]),\
+                      SondeDatetime.fromisoformat(criteria['t_range'][1]))
             if criteria.get('z_range') is not None:
                 where_query += f"and LaunchTime between '{t_range[0]}' and '{t_range[1]}' " 
             else:
@@ -75,9 +76,26 @@ class SQLite3SondeLoader(BaseSondeLoader):
         """Load radiosonde data (multiple) from sqlite3 database"""
         self.__open_connection()
         sql_query = f"select * from sonde where LaunchTime='{launchtime}'"
+        rename_dict = {"Altitude" : "height",
+                       "Pressure"  : "pressure",
+                       "Temperature" : "temperature",
+                       "Humidity"  : "relative_humidity",
+                       "WindSpeed" : "wind_speed",
+                       "WindDir" :  "wind_direction",
+                       "WindEast" : "wind_east",
+                       "WindNorth" : "wind_north"}
         out = pd.read_sql(sql_query, 
                           self.conn, 
                           parse_dates=['timestamp'])
         self.__close_connection()
-        rds = Radiosonde(df=out)
+
+        # a dirty adaptor to load the radiosonde into  the required format
+        launch_time = datetime.fromisoformat(out['LaunchTime'].values[0][:-4])
+        print(launch_time)
+        launch_lat = out['LaunchLatitude'].values[0]
+        launch_lon = out['LaunchLongitude'].values[0]
+        rds = Radiosonde(df=out.rename(columns=rename_dict),
+                         launch_lat = launch_lat,
+                         launch_lon = launch_lon,
+                         launch_time = launch_time)
         return  rds

@@ -7,8 +7,8 @@ class BaseRadiosondeComponent(ABC):
     """Define an interface for working with radiosonde data"""
 
     def __init__(self) -> None:
-        self.launch_info : LaunchInfo = {}
-        self.data_info   : DataInfo = DataInfo()
+        self._launch_info : LaunchInfo = {}
+        self._data_info   : DataInfo = DataInfo()
 
     def __validate(self) -> bool:
         """Validate (extension required)"""
