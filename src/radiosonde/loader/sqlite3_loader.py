@@ -117,8 +117,8 @@ class SQLite3SondeLoader(BaseSondeLoader):
             micro_secs += '0' * (6 - len(micro_secs))
             launchtime = time  + '.' + micro_secs + " UTC"
         launch_time = datetime.fromisoformat(launchtime[:-4])
-        launch_lat = out['LaunchLatitude'].values[0]
-        launch_lon = out['LaunchLongitude'].values[0]
+        launch_lat = out_tmp['LaunchLatitude'].values[0]
+        launch_lon = out_tmp['LaunchLongitude'].values[0]
         rds = Radiosonde(df=out,
                          launch_lat = launch_lat,
                          launch_lon = launch_lon,
