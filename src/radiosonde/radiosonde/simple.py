@@ -30,7 +30,8 @@ class SimpleDataFrameRadiosonde(BaseRadiosonde):
 
     @property
     def relative_humidity(self):
-        return self._data.loc[:,'humidity'].values
+        # Convert RH to between 0 and 1
+        return self._data.loc[:,'relative_humidity'].values / 100
     
     @property
     def wind_speed(self):
