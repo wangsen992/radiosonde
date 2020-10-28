@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from ..internals.launch_info import LaunchInfo as LaunchInfo
 from ..internals.gps import GeoLocation
-from ..internals.sonde_datetime.base import BaseDatetime as SondeDatetime
+from ..internals.sonde_datetime import BaseDatetime as SondeDatetime
 
 class BaseRadiosondeComponent(ABC):
     """Define an interface for working with radiosonde data"""
