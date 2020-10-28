@@ -63,19 +63,13 @@ class SimpleDataFrameRadiosonde(BaseRadiosonde):
 
     @property
     def wind_north(self):
-<<<<<<< HEAD
         return self._data.loc[:,'wind_north'].values.data * \
         units(str(self._data['wind_north'].values.units))
-=======
-        return self._data.loc[:,'wind_north'].values
 
 class SimpleDataFrameRadiosondeList(BaseRadiosondeList):
 
     def __init__(self):
         BaseRadiosondeList.__init__(self)
-
-    def is_list(self) -> bool:
-        pass
 
     def some_operation(self)  -> str:
         """Defines the interface here"""
@@ -126,5 +120,4 @@ class SimpleDataFrameRadiosondeList(BaseRadiosondeList):
     def wind_north(self):
         """return the northern component of wind speed values of (collection of) sondes"""
         pass
->>>>>>> main
 
