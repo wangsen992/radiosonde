@@ -48,3 +48,62 @@ class SimpleDataFrameRadiosonde(BaseRadiosonde):
     @property
     def wind_north(self):
         return self._data.loc[:,'wind_north'].values
+
+class SimpleDataFrameRadiosondeList(BaseRadiosondeList):
+
+    def __init__(self):
+        BaseRadiosondeList.__init__(self)
+
+    def is_list(self) -> bool:
+        pass
+
+    def some_operation(self)  -> str:
+        """Defines the interface here"""
+        pass
+
+    # Variable accessors
+    @property
+    def height(self):
+        """return the height values of (collection of) sondes"""
+        pass
+
+    @property
+    def pressure(self):
+        """return the pressure values of (collection of) sondes"""
+        pass
+
+    @property
+    def temperature(self):
+        """return the temperature values of (collection of) sondes"""
+        pass
+
+    @property
+    def dewpoint(self):
+        """return the dewpoint values of (collection of) sondes"""
+        pass
+
+    @property
+    def relative_humidity(self):
+        """return the relative humidity values of (collection of) sondes"""
+        pass
+
+    @property
+    def wind_speed(self):
+        """return the horizontal wind speed values of (collection of) sondes"""
+        pass
+
+    @property
+    def wind_direction(self):
+        """return the horizontal wind direction values of (collection of) sondes"""
+        pass
+
+    @property
+    def wind_east(self):
+        """return the eastern component of wind speed values of (collection of) sondes"""
+        pass
+
+    @property
+    def wind_north(self):
+        """return the northern component of wind speed values of (collection of) sondes"""
+        pass
+

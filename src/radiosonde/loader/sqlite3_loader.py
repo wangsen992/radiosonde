@@ -3,6 +3,7 @@ from datetime import datetime
 import pandas as pd
 from .base_loader import BaseSondeLoader
 from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
+from ..radiosonde.simple import SimpleDataFrameRadiosondeList as RadiosondeList
 from ..internals.sonde_datetime.sqlite3 import SQLite3Datetime as SondeDatetime
 
 class SQLite3SondeLoader(BaseSondeLoader):
@@ -103,3 +104,10 @@ class SQLite3SondeLoader(BaseSondeLoader):
                          launch_lon = launch_lon,
                          launch_time = launch_time)
         return  rds
+
+    def load_many(self, launchtime_list):
+
+        sondeList =  RadiosondeList()
+        for time  in launchtime_list:
+            sondeList.add(self.load_one(time))
+        return sondeList

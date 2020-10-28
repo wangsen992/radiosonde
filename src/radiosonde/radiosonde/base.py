@@ -113,10 +113,16 @@ class BaseRadiosondeList(BaseRadiosondeComponent):
     def __init__(self) -> None:
         self._children = []
 
-    def add(self, radiosonde: BaseRadiosondeComponent) -> None:
+    def __len__(self) -> int:
+        return len(self._children)
+
+    def add(self, radiosonde: BaseRadiosonde) -> None:
         self._children.append(radiosonde)
+
+    def extend(self, radiosonde_list: BaseRadiosondeList) -> None:
+        self._children.extend(radiosonde_list._children)
         
-    def remove(self, radiosonde: BaseRadiosondeComponent) -> None:
+    def remove(self, radiosonde: BaseRadiosonde) -> None:
         self._children.remove(radiosonde)
 
     def is_list(self) -> bool:
