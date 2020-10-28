@@ -2,10 +2,11 @@ import sqlite3
 from datetime import datetime
 import pandas as pd
 import pint
-from .base_loader import BaseSondeLoader
-from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
-from ..radiosonde.simple import SimpleDataFrameRadiosondeList as RadiosondeList
-from ..internals.sonde_datetime.sqlite3 import SQLite3Datetime as SondeDatetime
+
+from ..base_loader import BaseSondeLoader
+from ...radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
+from ...radiosonde.simple import SimpleDataFrameRadiosondeList as RadiosondeList
+from .sqlite3_datetime import SQLite3Datetime as SondeDatetime
 # Try to replace direct dependency on metpy
 from metpy.units import units
 from metpy import calc

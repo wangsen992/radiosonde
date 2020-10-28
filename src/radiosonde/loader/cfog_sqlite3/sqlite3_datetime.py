@@ -1,5 +1,5 @@
 import sqlite3
-from .base import BaseDatetime
+from ...internals.sonde_datetime import BaseDatetime
 
 class SQLite3Datetime(BaseDatetime):
 
