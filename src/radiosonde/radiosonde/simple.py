@@ -3,11 +3,16 @@ from .base import BaseRadiosonde, BaseRadiosondeList
 # Try to replace direct dependency on metpy
 from metpy.units import units
 
+__all__ = ["SimpleDataFrameRadiosonde", "SimpleDataFrameRadiosondeList"]
+
 class SimpleDataFrameRadiosonde(BaseRadiosonde):
     """A simple inheritance of pd.DataFrame"""
 
     def __init__(self, df, launch_lat, launch_lon, launch_time):
-        BaseRadiosonde.__init__(self, launch_lat, launch_lon, launch_time)
+        BaseRadiosonde.__init__(self, 
+                                launch_lat=launch_lat, 
+                                launch_lon=launch_lon, 
+                                launch_time=launch_time)
         self._data = df
 
     def some_operation(self):
