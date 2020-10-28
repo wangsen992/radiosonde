@@ -74,15 +74,16 @@ class SQLite3SondeLoader(BaseSondeLoader):
 
         pass
 
-    def load_one(self, launchtime):
+    def load_one(self, launchtime, dropping=0):
         """Load radiosonde data (multiple) from sqlite3 database
 
         Argumets:
             launchtime (str) : exact string method obtained from available
             method.
+            dropping (int) : 0 for ascending, 1 or dropping
         """
         self.__open_connection()
-        sql_query = f"select * from sonde where LaunchTime='{launchtime}'"
+        sql_query = f"select * from sonde where LaunchTime='{launchtime}' and Dropping={dropping}"
         rename_dict = {"Altitude" : "height",
                        "Pressure"  : "pressure",
                        "Temperature" : "temperature",

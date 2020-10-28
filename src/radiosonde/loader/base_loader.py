@@ -89,6 +89,9 @@ class BaseSondeLoader:
 
         sondeList =  RadiosondeList()
         for time  in launchtime_list:
-            sondeList.add(self.load_one(time))
-            print(f"Sonde at {time} downloaded succesfully")
+            try: 
+                sondeList.add(self.load_one(time))
+                print(f"Sonde at {time} downloaded succesfully")
+            except:
+                print(f"[Error] Somethign went wrong for {time}. Skipped...")
         return sondeList
