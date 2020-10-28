@@ -1,14 +1,18 @@
 from abc import ABC, abstractmethod
 
-from ..internals.launch_info import LaunchInfo
-from ..internals.data_info import DataInfo
+from ..internals.launch_info import LaunchInfo as LaunchInfo
+from ..internals.gps import GeoLocation
+from ..internals.sonde_datetime.base import BaseDatetime as SondeDatetime
 
 class BaseRadiosondeComponent(ABC):
     """Define an interface for working with radiosonde data"""
 
-    def __init__(self) -> None:
-        self._launch_info : LaunchInfo = {}
-        self._data_info   : DataInfo = DataInfo()
+    def __init__(self, launch_lat, launch_lon, launch_time) -> None:
+
+        gps = GeoLocation(lat=launch_lat, lon=launch_lon)
+        time = SondeDatetime.from_datetime(launch_time)
+        self._launch_info = LaunchInfo(launch_time=time,
+                                       launch_gps=gps) 
 
     def __validate(self) -> bool:
         """Validate (extension required)"""

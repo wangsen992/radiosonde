@@ -1,22 +1,17 @@
 import pandas as pd
 from .base import BaseRadiosonde, BaseRadiosondeList
-from ..internals.launch_info import LaunchInfo as LaunchInfo
-from ..internals.gps import GeoLocation
-from ..internals.sonde_datetime.base import BaseDatetime as SondeDatetime
 
 class SimpleDataFrameRadiosonde(BaseRadiosonde):
     """A simple inheritance of pd.DataFrame"""
 
     def __init__(self, df, launch_lat, launch_lon, launch_time):
+        BaseRadiosonde.__init__(self, launch_lat, launch_lon, launch_time)
         self._data = df
-        gps = GeoLocation(lat=launch_lat, lon=launch_lon)
-        time = SondeDatetime.from_datetime(launch_time)
-        self._launch_info = LaunchInfo(launch_time=time,
-                                       launch_gps=gps) 
 
     def some_operation(self):
         print("Do some operation here")
 
+    # Variable accessor methods
     @property
     def height(self):
         return self._data.loc[:,'height'].values
