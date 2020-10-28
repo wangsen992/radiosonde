@@ -1,5 +1,8 @@
 from abc import abstractmethod
 
+from ..radiosonde import  Radiosonde
+from ..radiosonde import  RadiosondeList
+
 class BaseSondeLoader:
     """Base loader interface for radiosonde to define common loading
     interface
@@ -70,7 +73,7 @@ class BaseSondeLoader:
         pass
 
     @abstractmethod
-    def load(self, start, end):
+    def load_one(self, launchtime):
         """Abstract interface for radiosonde loader
 
         Args:
@@ -82,3 +85,10 @@ class BaseSondeLoader:
         """
         pass
 
+    def load_many(self, launchtime_list, verbose=True):
+
+        sondeList =  RadiosondeList()
+        for time  in launchtime_list:
+            sondeList.add(self.load_one(time))
+            print(f"Sonde at {time} downloaded succesfully")
+        return sondeList

@@ -4,8 +4,8 @@ import pandas as pd
 import pint
 
 from ..base_loader import BaseSondeLoader
-from ...radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
-from ...radiosonde.simple import SimpleDataFrameRadiosondeList as RadiosondeList
+from ...radiosonde import  Radiosonde
+from ...radiosonde import  RadiosondeList
 from .sqlite3_datetime import SQLite3Datetime as SondeDatetime
 # Try to replace direct dependency on metpy
 from metpy.units import units
@@ -126,9 +126,3 @@ class SQLite3SondeLoader(BaseSondeLoader):
                          launch_time = launch_time)
         return  rds
 
-    def load_many(self, launchtime_list):
-
-        sondeList =  RadiosondeList()
-        for time  in launchtime_list:
-            sondeList.add(self.load_one(time))
-        return sondeList
