@@ -7,13 +7,6 @@ from ..internals.sonde_datetime.base import BaseDatetime as SondeDatetime
 class BaseRadiosondeComponent(ABC):
     """Define an interface for working with radiosonde data"""
 
-    def __init__(self, launch_lat, launch_lon, launch_time) -> None:
-
-        gps = GeoLocation(lat=launch_lat, lon=launch_lon)
-        time = SondeDatetime.from_datetime(launch_time)
-        self._launch_info = LaunchInfo(launch_time=time,
-                                       launch_gps=gps) 
-
     def __validate(self) -> bool:
         """Validate (extension required)"""
         pass
@@ -84,8 +77,31 @@ class BaseRadiosondeComponent(ABC):
 
 class BaseRadiosonde(BaseRadiosondeComponent):
 
+    def __init__(self, launch_lat, launch_lon, launch_time) -> None:
+
+        gps = GeoLocation(lat=launch_lat, lon=launch_lon)
+        time = SondeDatetime.from_datetime(launch_time)
+        self._launch_info = LaunchInfo(launch_time=time,
+                                       launch_gps=gps) 
+
     def is_list(self) -> bool:
         return False
+
+    @property
+    def launch_lat(self):
+        return self._launch_info['launch_gps'].lat
+
+    @property
+    def launch_lon(self):
+        return self._launch_info['launch_gps'].lon
+
+    @property
+    def launch_gps(self):
+        return self._launch_info['launch_gps']
+
+    @property
+    def launch_time(self):
+        return self._launch_info['launch_time']
 
     def some_operation(self) -> str:
 
