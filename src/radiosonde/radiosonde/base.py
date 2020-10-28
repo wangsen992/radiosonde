@@ -84,6 +84,11 @@ class BaseRadiosonde(BaseRadiosondeComponent):
         self._launch_info = LaunchInfo(launch_time=time,
                                        launch_gps=gps) 
 
+    def __repr__(self) -> str:
+        out_str = f"<{self.__class__.__name__}: {self.launch_time}, {self.launch_gps}>"
+        return out_str
+            
+
     def is_list(self) -> bool:
         return False
 
@@ -116,10 +121,13 @@ class BaseRadiosondeList(BaseRadiosondeComponent):
     def __len__(self) -> int:
         return len(self._children)
 
+    def __getitem__(self, key) ->  BaseRadiosonde:
+        return self._children[key]
+
     def add(self, radiosonde: BaseRadiosonde) -> None:
         self._children.append(radiosonde)
 
-    def extend(self, radiosonde_list: BaseRadiosondeList) -> None:
+    def extend(self, radiosonde_list) -> None:
         self._children.extend(radiosonde_list._children)
         
     def remove(self, radiosonde: BaseRadiosonde) -> None:
