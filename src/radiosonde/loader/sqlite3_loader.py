@@ -1,9 +1,13 @@
 import sqlite3
 from datetime import datetime
 import pandas as pd
+import pint
 from .base_loader import BaseSondeLoader
 from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
 from ..internals.sonde_datetime.sqlite3 import SQLite3Datetime as SondeDatetime
+# Try to replace direct dependency on metpy
+from metpy.units import units
+from metpy import calc
 
 class SQLite3SondeLoader(BaseSondeLoader):
 
@@ -84,18 +88,35 @@ class SQLite3SondeLoader(BaseSondeLoader):
                        "WindDir" :  "wind_direction",
                        "WindEast" : "wind_east",
                        "WindNorth" : "wind_north"}
-        out = pd.read_sql(sql_query, 
+        out_tmp = pd.read_sql(sql_query, 
                           self.conn, 
-                          parse_dates=['timestamp'])
+                          parse_dates=['timestamp']).rename(columns=rename_dict)
         self.__close_connection()
 
+        # convert to united dataframe with pint
+        out  = pd.DataFrame({
+            "height" : pd.Series(out_tmp['height'], dtype="pint[m]"),
+            "pressure" : pd.Series(out_tmp['pressure'], dtype="pint[hPa]"),
+            "temperature" : pd.Series(out_tmp['temperature'], dtype="pint[kelvin]"),
+            "relative_humidity" : pd.Series(out_tmp['relative_humidity']/100, dtype="pint[dimensionless]"),
+            "wind_speed" : pd.Series(out_tmp['wind_speed'], dtype="pint[m/s]"),
+            "wind_direction" : pd.Series(out_tmp['wind_direction'], dtype="pint[deg]"),
+            "wind_east" : pd.Series(out_tmp['wind_east'], dtype="pint[m/s]"),
+            "wind_north" : pd.Series(out_tmp['wind_north'], dtype="pint[m/s]"),
+            })
+
+        temperature = out['temperature'].values.data * units('kelvin')
+        rh = out['relative_humidity'].values.data * units('dimensionless')
+        dewpoint = calc.dewpoint_from_relative_humidity(temperature, rh)
+        out['dewpoint'] = pd.Series(dewpoint.m, dtype=f"pint[{str(dewpoint.units)}]")
         # a dirty adaptor to load the radiosonde into  the required format
-        launch_time = datetime.fromisoformat(out['LaunchTime'].values[0][:-4])
+        launch_time = datetime.fromisoformat(out_tmp['LaunchTime'].values[0][:-4])
         print(launch_time)
-        launch_lat = out['LaunchLatitude'].values[0]
-        launch_lon = out['LaunchLongitude'].values[0]
-        rds = Radiosonde(df=out.rename(columns=rename_dict),
+        launch_lat = out_tmp['LaunchLatitude'].values[0]
+        launch_lon = out_tmp['LaunchLongitude'].values[0]
+        rds = Radiosonde(df=out,
                          launch_lat = launch_lat,
                          launch_lon = launch_lon,
                          launch_time = launch_time)
+        
         return  rds
