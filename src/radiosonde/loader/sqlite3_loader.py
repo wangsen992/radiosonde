@@ -4,6 +4,7 @@ import pandas as pd
 import pint
 from .base_loader import BaseSondeLoader
 from ..radiosonde.simple import SimpleDataFrameRadiosonde as Radiosonde
+from ..radiosonde.simple import SimpleDataFrameRadiosondeList as RadiosondeList
 from ..internals.sonde_datetime.sqlite3 import SQLite3Datetime as SondeDatetime
 # Try to replace direct dependency on metpy
 from metpy.units import units
@@ -56,11 +57,7 @@ class SQLite3SondeLoader(BaseSondeLoader):
         group_query =  "group by LaunchTime, Dropping"
 
         allsondes = pd.read_sql(sql=select_query+where_query+group_query,
-                                con=self.conn,
-                                parse_dates=['LaunchTime','startTime', 'endTime'])
-        allsondes['startTime'] = allsondes['startTime'].dt.tz_localize(None)
-        allsondes['endTime'] = allsondes['endTime'].dt.tz_localize(None)
-        allsondes['LaunchTime'] = allsondes['LaunchTime'].dt.tz_localize(None)
+                                con=self.conn)
         if criteria.get('z_range') is not None and criteria.get('pct') is not None:
             pct = criteria['pct']
             out =  allsondes.query('(maxHeight - minHeight)/{z_full} > {pct}'\
@@ -77,7 +74,12 @@ class SQLite3SondeLoader(BaseSondeLoader):
         pass
 
     def load_one(self, launchtime):
-        """Load radiosonde data (multiple) from sqlite3 database"""
+        """Load radiosonde data (multiple) from sqlite3 database
+
+        Argumets:
+            launchtime (str) : exact string method obtained from available
+            method.
+        """
         self.__open_connection()
         sql_query = f"select * from sonde where LaunchTime='{launchtime}'"
         rename_dict = {"Altitude" : "height",
@@ -110,13 +112,22 @@ class SQLite3SondeLoader(BaseSondeLoader):
         dewpoint = calc.dewpoint_from_relative_humidity(temperature, rh)
         out['dewpoint'] = pd.Series(dewpoint.m, dtype=f"pint[{str(dewpoint.units)}]")
         # a dirty adaptor to load the radiosonde into  the required format
-        launch_time = datetime.fromisoformat(out_tmp['LaunchTime'].values[0][:-4])
-        print(launch_time)
-        launch_lat = out_tmp['LaunchLatitude'].values[0]
-        launch_lon = out_tmp['LaunchLongitude'].values[0]
+        time,_, micro_secs = launchtime[:-4].rpartition('.')
+        if len(micro_secs) < 6:
+            micro_secs += '0' * (6 - len(micro_secs))
+            launchtime = time  + '.' + micro_secs + " UTC"
+        launch_time = datetime.fromisoformat(launchtime[:-4])
+        launch_lat = out['LaunchLatitude'].values[0]
+        launch_lon = out['LaunchLongitude'].values[0]
         rds = Radiosonde(df=out,
                          launch_lat = launch_lat,
                          launch_lon = launch_lon,
                          launch_time = launch_time)
-        
         return  rds
+
+    def load_many(self, launchtime_list):
+
+        sondeList =  RadiosondeList()
+        for time  in launchtime_list:
+            sondeList.add(self.load_one(time))
+        return sondeList
