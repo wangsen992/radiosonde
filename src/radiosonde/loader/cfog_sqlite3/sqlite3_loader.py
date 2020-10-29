@@ -127,3 +127,14 @@ class SQLite3SondeLoader(BaseSondeLoader):
                          launch_time = launch_time)
         return  rds
 
+    def load_many(self, launchtime_list, dropping=0, verbose=True):
+        """Overwrite load_many from base class"""
+
+        sondeList =  RadiosondeList()
+        for time  in launchtime_list:
+            try: 
+                sondeList.add(self.load_one(time, dropping=dropping))
+                print(f"Sonde at {time} downloaded succesfully")
+            except:
+                print(f"[Error] Somethign went wrong for {time}. Skipped...")
+        return sondeList
