@@ -4,6 +4,7 @@ import metpy.plots as mplots
 
 def plot_skewT(sonde,
                fig, 
+               title=None,
                subplot=None,
                rotation=45,
                rect=None,
@@ -22,7 +23,17 @@ def plot_skewT(sonde,
     Td = sonde.dewpoint
     u = sonde.wind_east
     v= sonde.wind_north
-    barb_step = len(p) // 20
+    barb_step = len(p) // barb_count
+    # handle the case where automatic bar_step is zero
+    if barb_step == 0:
+        barb_step = 1
+
+    # provide default title
+    if title is None:
+        time_str = sonde.launch_time.strftime("%F %H:%M")
+        title = f"Sonde launched @ ({sonde.launch_lat:5.3f}N, {sonde.launch_lon:5.3f}E)"+\
+                f"\nLaunch Time: {time_str}"
+    skew.ax.set(title=title)
 
     # Plot the data using normal plotting functions, in this case using
     # log scaling in Y, as dictated by the typical meteorological plot.
