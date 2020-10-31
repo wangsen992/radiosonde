@@ -18,6 +18,35 @@ class BaseDatetime:
                                      microsecond=microsecond,
                                      tzinfo=tzinfo,
                                      fold=fold)
+    # property method
+    @property
+    def year(self):
+        return self.__datetime.year
+
+    @property
+    def month(self):
+        return self.__datetime.month
+    @property
+    def day(self):
+        return self.__datetime.day
+    @property
+    def hour(self):
+        return self.__datetime.hour
+    @property
+    def minute(self):
+        return self.__datetime.minute
+    @property
+    def second(self):
+        return self.__datetime.second
+    @property
+    def microsecond(self):
+        return self.__datetime.microsecond
+    @property
+    def tzinfo(self):
+        return self.__datetime.tzinfo
+    @property
+    def fold(self):
+        return self.__datetime.fold
 
     @classmethod
     def from_datetime(cls, dt):
