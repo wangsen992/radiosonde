@@ -71,6 +71,24 @@ class SimpleDataFrameRadiosonde(BaseRadiosonde):
         return self._data.loc[:,'wind_north'].values.data * \
         units(str(self._data['wind_north'].values.units))
 
+    # Slicing methods
+    def _slice_h(self, start, end):
+        """Slice the radiosonde object with height
+
+        Argumets:
+            start (int/float) : height in meters
+            end (int/float) : height in meters
+
+        Returns:
+            SimpleDataFrameRadiosonde
+        """
+        df = self._data.iloc[(self.height.to('m').m  > start) & \
+                             (self.height.to('m').m < end), :]
+        return SimpleDataFrameRadiosonde(df=df, 
+                                         launch_lat=self.launch_lat, 
+                                         launch_lon=self.launch_lon, 
+                                         launch_time=self.launch_time)
+
 class SimpleDataFrameRadiosondeList(BaseRadiosondeList):
 
     def __init__(self):

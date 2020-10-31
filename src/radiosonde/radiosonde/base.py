@@ -75,6 +75,17 @@ class BaseRadiosondeComponent(ABC):
         """return the northern component of wind speed values of (collection of) sondes"""
         pass
 
+    # slicing  methods
+    @abstractmethod
+    def _slice_h(self, start, end):
+        """Return the same class object with specified slice"""
+        pass
+
+    @abstractmethod
+    def _slice_p(self, start, end):
+        """Return the same class object with specified slice"""
+        pass
+
 class BaseRadiosonde(BaseRadiosondeComponent):
 
     def __init__(self, launch_lat, launch_lon, launch_time) -> None:
@@ -108,6 +119,12 @@ class BaseRadiosonde(BaseRadiosondeComponent):
     def launch_time(self):
         return self._launch_info['launch_time']
 
+    def _slice_p(self, start, end):
+        raise NotImplementedError
+
+    def _slice_h(self, start, end):
+        raise NotImplementedError
+
     def some_operation(self) -> str:
 
         return "This is a BaseRadiosonde"
@@ -135,6 +152,12 @@ class BaseRadiosondeList(BaseRadiosondeComponent):
 
     def is_list(self) -> bool:
         return True
+
+    def _slice_p(self, start, end):
+        raise NotImplementedError
+
+    def _slice_h(self, start, end):
+        raise NotImplementedError
 
     def some_operation(self) -> str:
 
