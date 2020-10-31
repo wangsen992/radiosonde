@@ -4,6 +4,9 @@ from importlib_resources import path
 
 import pandas as pd
 import pint
+from pint import UnitRegistry
+from metpy.units import units
+import metpy.calc as mcalc
 
 from ..base_loader import BaseSondeLoader
 from ...radiosonde import  Radiosonde
@@ -50,13 +53,23 @@ class Igra2SondeLoader(BaseSondeLoader):
         launch_lon = ret_data[1]['longitude'].values[0]
         launch_time = launchtime
 
-        out_tmp = ret_data[0]
+        varlist = ['height','pressure', 'temperature',
+                 'dewpoint', 'speed', 'direction', 'u_wind',
+                 'v_wind']
+        out_tmp = ret_data[0][varlist]
+        out_tmp.dropna(axis=0, inplace=True)
+        out_tmp.reset_index(inplace=True)
+
+        temperature = out_tmp['temperature'].values * units('degC')
+        dewpoint = out_tmp['dewpoint'].values * units('degC')
+        rh = mcalc.relative_humidity_from_dewpoint(temperature, dewpoint)
+
         out  = pd.DataFrame({
             "height" : pd.Series(out_tmp['height'], dtype="pint[m]"),
             "pressure" : pd.Series(out_tmp['pressure'], dtype="pint[hPa]"),
-            "temperature" : pd.Series(out_tmp['temperature'], dtype="pint[degC]"),
-            "dewpoint" : pd.Series(out_tmp['dewpoint'], dtype="pint[degC]"),
-            "relative_humidity" : pd.Series(out_tmp['relative_humidity'], dtype="pint[dimensionless]"),
+            "temperature" : pd.Series(out_tmp['temperature']+273.15, dtype="pint[kelvin]"),
+            "dewpoint" : pd.Series(out_tmp['dewpoint']+273.15, dtype="pint[kelvin]"),
+            "relative_humidity" : pd.Series(rh.m, dtype="pint[dimensionless]"),
             "wind_speed" : pd.Series(out_tmp['speed'], dtype="pint[m/s]"),
             "wind_direction" : pd.Series(out_tmp['direction'], dtype="pint[deg]"),
             "wind_east" : pd.Series(out_tmp['u_wind'], dtype="pint[m/s]"),
