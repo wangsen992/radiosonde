@@ -94,6 +94,7 @@ class SQLite3SondeLoader(BaseSondeLoader):
                        "WindNorth" : "wind_north"}
         out_tmp = pd.read_sql(sql_query, 
                           self.conn, 
+                          index_col='timestamp',
                           parse_dates=['timestamp']).rename(columns=rename_dict)
         self.__close_connection()
 
@@ -119,9 +120,15 @@ class SQLite3SondeLoader(BaseSondeLoader):
         if len(micro_secs) < 6:
             micro_secs += '0' * (6 - len(micro_secs))
             launchtime = time  + '.' + micro_secs + " UTC"
-        launch_time = datetime.fromisoformat(launchtime[:-4])
-        launch_lat = out_tmp['LaunchLatitude'].values[0]
-        launch_lon = out_tmp['LaunchLongitude'].values[0]
+        if dropping == 0:
+            launch_time = datetime.fromisoformat(launchtime[:-4])
+            launch_lat = out_tmp['LaunchLatitude'].values[0]
+            launch_lon = out_tmp['LaunchLongitude'].values[0]
+        elif dropping == 1:
+            launchtime_tmp = out_tmp.index.max()
+            launch_time = launchtime_tmp.to_pydatetime()
+            launch_lat = out_tmp.loc[launchtime_tmp,'Latitude']
+            launch_lon = out_tmp.loc[launchtime_tmp,'Longitude']
         rds = Radiosonde(df=out,
                          launch_lat = launch_lat,
                          launch_lon = launch_lon,
@@ -134,8 +141,9 @@ class SQLite3SondeLoader(BaseSondeLoader):
         sondeList =  RadiosondeList()
         for time  in launchtime_list:
             try: 
-                sondeList.add(self.load_one(time, dropping=dropping))
-                print(f"Sonde at {time} downloaded succesfully")
+                sonde = self.load_one(time, dropping=dropping)
+                sondeList.add(sonde)
+                print(f"Sonde at {sonde.launch_time} downloaded succesfully")
             except:
                 print(f"[Error] Somethign went wrong for {time}. Skipped...")
         return sondeList
