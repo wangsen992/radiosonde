@@ -114,7 +114,7 @@ class SQLite3SondeLoader(BaseSondeLoader):
         rh = out['relative_humidity'].values.data * units('dimensionless')
         dewpoint = calc.dewpoint_from_relative_humidity(temperature, rh)\
                        .to('kelvin') # needed for slicing. prolem with degC as
-        out['dewpoint'] = pd.Series(dewpoint.m, dtype=f"pint[{str(dewpoint.units)}]")
+        out['dewpoint'] = pd.Series(dewpoint.m, dtype=f"pint[kelvin]",index=out.index)
         # a dirty adaptor to load the radiosonde into  the required format
         time,_, micro_secs = launchtime[:-4].rpartition('.')
         if len(micro_secs) < 6:
