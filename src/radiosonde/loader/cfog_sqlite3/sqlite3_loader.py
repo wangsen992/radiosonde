@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 import pandas as pd
 import pint
+import pint_pandas
 
 from ..base_loader import BaseSondeLoader
 from ...radiosonde import  Radiosonde
