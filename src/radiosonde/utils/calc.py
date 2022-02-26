@@ -46,11 +46,4 @@ def extract_var(sl, v, resolution=1.):
                 pd.Series(f(z), index=z)
     return pd.DataFrame(out_dict)
 
-def plot_vertical(sonde_df, ax=None, *args, **kwargs):
-    if ax is None:
-        fig, ax = plt.subplots()
-    for t in sonde_df.columns:
-        ax.plot(sonde_df[t].values, sonde_df.index, label=t)
-        ax.legend()
-    return ax
 

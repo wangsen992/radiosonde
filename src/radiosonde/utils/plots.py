@@ -2,6 +2,14 @@ import matplotlib.pyplot as plt
 import metpy.calc as mcalc
 import metpy.plots as mplots
 
+def plot_vertical(sonde_df, ax=None, *args, **kwargs):
+    if ax is None:
+        fig, ax = plt.subplots()
+    for t in sonde_df.columns:
+        ax.plot(sonde_df[t].values, sonde_df.index, label=t)
+        ax.legend()
+    return ax
+
 def plot_skewT(sonde,
                fig, 
                title=None,
